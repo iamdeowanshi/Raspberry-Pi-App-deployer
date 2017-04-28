@@ -2,6 +2,7 @@ import pika
 import uuid
 import subprocess
 import os
+from backports import tempfile
 
 class RpcClient(object):
     def __init__(self):
@@ -38,46 +39,56 @@ class RpcClient(object):
         split_array = self.response.split("/")
         return split_array[len(split_array) - 1]
 
-    def get_app_file(self, dir_name):
-        for file in os.listdir("/home/pushkar/" + dir_name):
+    def get_app_file(self, temp_dir_loc):
+        for file in os.listdir(temp_dir_loc):
             if file.endswith(".py"):
                 return file
 
     def install_dependencies(self):
         repo_name = self.get_repo_name()
         print repo_name
+        temp_dir_loc = ''
 
-        #p = subprocess.Popen('pip install -r ' + self.response, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        p = subprocess.call('git clone ' + self.response, shell=True, stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
-        if p == 0:
-            print "Cloning Successful.."
-            print "Installing Packages.."
-            p = subprocess.call('sudo pip install -r ' + repo_name + '/requirements.txt', shell=True, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
+        #f = tempfile.TemporaryDirectory()
+        with tempfile.TemporaryDirectory() as f:
+            temp_dir_loc = f
+            if os.path.exists(temp_dir_loc):
+                print "Temporary directory created.."
+            else:
+                print "Error : Temporary directory could not be created."
+
+            #p = subprocess.Popen('pip install -r ' + self.response, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            path = self.response + ' ' + temp_dir_loc
+            p = subprocess.call('git clone ' + path, shell=True, stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
             if p == 0:
-                print "Packages installed successfully.. "
-                print "Running App.. "
-                file_name = self.get_app_file(repo_name)
-                p = subprocess.call('python ' + repo_name + '/' + file_name, shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.STDOUT)
+                print "Cloning Successful.."
+                print "Installing Packages.."
+                p = subprocess.call('sudo pip install -r ' + temp_dir_loc + '/requirements.txt', shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
                 if p == 0:
-                    print "App run successfully.."
-                    p = subprocess.call('sudo rm -r ' + repo_name + '/', shell=True,
+                    print "Packages installed successfully.. "
+                    print "Running App.. "
+                    file_name = self.get_app_file(temp_dir_loc)
+                    p = subprocess.call('python ' + temp_dir_loc + '/' + file_name, shell=True,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT)
                     if p == 0:
-                        print "Cloned directory removed.."
+                        print "App run successfully.."
+                        '''p = subprocess.call('sudo rm -r ' + repo_name + '/', shell=True,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.STDOUT)'''
                     else:
-                        print "Error : Cloned directory could not be removed."
+                        print "Error: Could not run app"
                 else:
-                    print "Error: Could not run app"
+                    print "Error: Packages could not be installed.."
             else:
-                print "Error: Packages could not be installed.."
+                print "Clone Unsuccessful.."
+
+        if not os.path.exists(temp_dir_loc):
+            print "Temporary directory removed.."
         else:
-            print "Clone Unsuccessful.."
-        #print p
+            print "Error : Temporary directory could not be removed."
 
 deployer_rpc = RpcClient()
 
