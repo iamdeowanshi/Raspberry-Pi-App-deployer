@@ -8,7 +8,7 @@ channel.queue_declare(queue='rpc_queue')
 
 
 def get_app_url():
-    return "https://github.com/amitakamat/Amita-Kamat-CMPE-273/blob/master/CMPE-273-Assignment-1/requirements.txt"
+    return "https://github.com/amitakamat/Sample-Python-App"
 
 def on_request(ch, method, props, body):
 

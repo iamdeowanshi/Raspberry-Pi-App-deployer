@@ -1,6 +1,7 @@
 import pika
 import uuid
 import subprocess
+import os
 
 class RpcClient(object):
     def __init__(self):
@@ -33,10 +34,50 @@ class RpcClient(object):
             self.connection.process_data_events()
         return self.response
 
+    def get_repo_name(self):
+        split_array = self.response.split("/")
+        return split_array[len(split_array) - 1]
+
+    def get_app_file(self, dir_name):
+        for file in os.listdir("/home/pushkar/" + dir_name):
+            if file.endswith(".py"):
+                return file
+
     def install_dependencies(self):
-        p = subprocess.Popen('pip install -r ' + self.response, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        for line in p.stdout.readlines():
-            print line
+        repo_name = self.get_repo_name()
+        print repo_name
+
+        #p = subprocess.Popen('pip install -r ' + self.response, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.call('git clone ' + self.response, shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        if p == 0:
+            print "Cloning Successful.."
+            print "Installing Packages.."
+            p = subprocess.call('sudo pip install -r ' + repo_name + '/requirements.txt', shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+            if p == 0:
+                print "Packages installed successfully.. "
+                print "Running App.. "
+                file_name = self.get_app_file(repo_name)
+                p = subprocess.call('python ' + repo_name + '/' + file_name, shell=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT)
+                if p == 0:
+                    print "App run successfully.."
+                    p = subprocess.call('sudo rm -r ' + repo_name + '/', shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT)
+                    if p == 0:
+                        print "Cloned directory removed.."
+                    else:
+                        print "Error : Cloned directory could not be removed."
+                else:
+                    print "Error: Could not run app"
+            else:
+                print "Error: Packages could not be installed.."
+        else:
+            print "Clone Unsuccessful.."
+        #print p
 
 deployer_rpc = RpcClient()
 
