@@ -5,8 +5,6 @@ import pika,uuid
 from VirtualEnv import VirtualEnvHandler, cleanupVirtualEnvHandler
 from GitRepoHandler import gitClone
 
-#GIT_URL = 'https://github.com/amitakamat/Sample-Python-App'
-
 def _configure_logging():
     log_filename = '/tmp/virtenvlogfile'
     root_logger = logging.RootLogger
@@ -49,8 +47,6 @@ def work(gitURL):
 
 
 _configure_logging()
-# if work(GIT_URL) == True:
-#    print "Pass"
 
 def OnDeployRequest(ch, method, props, body):
     deploySuccess = work(body)
@@ -80,8 +76,6 @@ PiQueue = result.method.queue
 
 corr_id = str(uuid.uuid4())
 
-#channel.basic_consume(OnResponse, queue=callback_queue)
-
 channel.basic_publish(exchange='',
                       routing_key='pi',
                       properties=pika.BasicProperties(
@@ -95,5 +89,3 @@ print(" Requested ")
 channel.basic_consume(OnDeployRequest, queue=PiQueue,no_ack=True)
 
 channel.start_consuming()
-#connection.close()
-
