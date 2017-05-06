@@ -1,15 +1,9 @@
-#from eventlet import wsgi
-#from paste.deploy import loadapp
+from common import config
 from service.rabbitmq_thread import get_rabbit_server
 from wsgi import start_app
 import argparse
-import config
-import threading
-#import eventlet
 import logging
 import logging.handlers
-
-#eventlet.monkey_patch()
 
 
 def _get_arg_parser():
@@ -32,34 +26,9 @@ def _configure_logging(conf):
     logging.getLogger("pika").propagate = False
 
 
-#def start_server(conf, paste_ini):
-#    _configure_logging(conf)
-#    if paste_ini:
-#        paste_file = paste_ini
-#    else:
-#        paste_file = conf.get("DEFAULT", "paste-ini")
-#    wsgi_app = loadapp('config:%s' % paste_file, 'main')
-#    wsgi.server(eventlet.listen(('', conf.getint("DEFAULT", "listen_port"))), wsgi_app)
-
-def start_rabbit_server():
-    rabbit_server = get_rabbit_server(conf)
-    rabbit_server.start_server()
-
-
 if __name__ == '__main__':
     parser = _get_arg_parser()
     conf = config.get_config(parser.config_file)
     _configure_logging(conf)
-    flask_thread = threading.Thread(target=start_app, name='flask', args=(conf,))
-    rabbit_thread = threading.Thread(target=start_rabbit_server, name='rabbit')
-    try:
-        flask_thread.start()
-        rabbit_thread.start()
-        flask_thread.join()
-        rabbit_thread.join()
-    except:
-        print "exit"
-    #rserver = get_rabbit_server(conf)
-    #rserver.start_server()
-    #start_server(conf, parser.paste_file)
+    start_app(conf)
 
