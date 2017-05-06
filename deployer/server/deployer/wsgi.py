@@ -1,5 +1,7 @@
+from flask import abort 
 from flask import Flask
 from flask import request
+from service.rabbitmq_thread import get_rabbit_server
 import json
 import logging
 
@@ -27,22 +29,28 @@ app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
-@app.route('/v1/<uuid:pi_id>/status', methods=['GET'])
+@app.route('/v1/<pi_id>/status', methods=['GET'])
 def details(pi_id):
-    return "%s is happy" % pi_id
+    rserver = get_rabbit_server()
+    result = rserver.get_status(pi_id)
+    if result is None:
+        # PI not found, raise 404
+        abort(404)
+    return json.dumps(result)
 
 
 @app.route('/v1/list', methods=['GET'])
 def pi_list():
-    return str(['pi 1', 'pi 2'])
+    rserver = get_rabbit_server()
+    return json.dumps(rserver.list_connected())
 
 
-@app.route('/v1/<uuid:pi_id>/deploy', methods=['POST', 'PUT'])
+@app.route('/v1/<pi_id>/deploy', methods=['POST', 'PUT'])
 def deploy(pi_id):
-    #data = request.data
-    data = None
-    LOG.info('Data: %s', data)
+    rserver = get_rabbit_server()
     try:
+        data = request.data
+        LOG.info('Data: %s', data)
         json_data = json.loads(data)
     except:
         return "Invalid JSON object"
@@ -56,6 +64,9 @@ def app_factory(global_config, **local_conf):
     return app
 
 def start_app(conf):
+    rserver = get_rabbit_server(config=conf)
+    LOG.info('Starting rabbit server')
+    rserver.start_server()
     LOG.info('Starting flask app...')
     port = conf.getint("DEFAULT", "listen_port")
     app.run(host='0.0.0.0', port=port)
