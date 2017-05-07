@@ -4,10 +4,10 @@ import subprocess
 import logging
 import shutil
 from backports import tempfile
+from virtualenvapi.manage import VirtualEnvironment
 
 LOG = logging.getLogger(__name__)
 
-from virtualenvapi.manage import VirtualEnvironment
 
 TIMEOUT = 10
 

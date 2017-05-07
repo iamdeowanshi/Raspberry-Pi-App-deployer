@@ -45,8 +45,8 @@ def pi_list():
     return json.dumps(rserver.list_connected())
 
 
-@app.route('/v1/<pi_id>/deploy', methods=['POST', 'PUT'])
-def deploy(pi_id):
+@app.route('/v1/<pi_ip>/deploy', methods=['POST', 'PUT'])
+def deploy(pi_ip):
     rserver = get_rabbit_server()
     try:
         data = request.data
@@ -56,6 +56,7 @@ def deploy(pi_id):
         result = {"result": "error", "message": "Invalid JSON Object"}
         return json.dumps(result)
     if json_data.get('git_url'):
+        rserver.add_package_to_pi(pi_ip, json_data.get('git_url'))
         result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_id)}
         return json.dumps(result)
     else:
