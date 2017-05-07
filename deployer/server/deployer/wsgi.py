@@ -29,10 +29,10 @@ app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
-@app.route('/v1/<pi_id>/status', methods=['GET'])
-def details(pi_id):
+@app.route('/v1/<pi_ip>/status', methods=['GET'])
+def details(pi_ip):
     rserver = get_rabbit_server()
-    result = rserver.get_status(pi_id)
+    result = rserver.get_status(pi_ip)
     if result is None:
         # PI not found, raise 404
         abort(404)
@@ -57,7 +57,7 @@ def deploy(pi_ip):
         return json.dumps(result)
     if json_data.get('git_url'):
         rserver.add_package_to_pi(pi_ip, json_data.get('git_url'))
-        result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_id)}
+        result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_ip)}
         return json.dumps(result)
     else:
         result = {"result": "error", "message": "Invalid request: git_url absent"}
