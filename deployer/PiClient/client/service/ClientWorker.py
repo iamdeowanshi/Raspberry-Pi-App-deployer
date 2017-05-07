@@ -14,26 +14,49 @@ LOG = logging.getLogger(__name__)
 def getPyFile(PyFileDir):
     for pyfile in os.listdir(PyFileDir):
         if pyfile.endswith(".py"):
-            return os.path.join(PyFileDir+"/", pyfile)
+            return os.path.join(PyFileDir + "/", pyfile)
+    return None
 
 
 def work(gitURL):
-    venvHdl = VirtualEnvHandler()
-    venvDir = venvHdl.getVenvDir()
+    try:
+        venvHdl = VirtualEnvHandler()
+    except Exception as e:
+        LOG.exception("Error creating virtual environment: %s" % e.message)
+        return None
 
+    if not venvHdl.isValidVenv():
+        LOG.error("Error creating virtual environment. Bailing out.")
+        return None
+
+    venvDir = venvHdl.getVenvDir()
     repoName = gitURL.split('/')[-1]
     gitRepoDir = venvDir + '/' + repoName
-    gitClone(gitRepoDir, gitURL)
+
+    if not gitClone(gitRepoDir, gitURL):
+        return None
 
     reqFile = gitRepoDir + '/' + 'requirements.txt'
 
-    venvHdl.installReqsInVirtualEnv(reqFile)
+    if not os.path.exists(reqFile):
+        LOG.error("Git repo does not contain requirements.txt. Bailing out")
+        cleanupVirtualEnvHandler(venvHdl)
+        return None
+
+    if not venvHdl.installReqsInVirtualEnv(reqFile):
+        cleanupVirtualEnvHandler(venvHdl)
+        return None
 
     pyFile = getPyFile(gitRepoDir)
-    ret = venvHdl.testAppInVirtualEnv(cmdargs=['python', pyFile])
+    if pyFile == None:
+        LOG.error("No .py file available in cloned repo root. Bailing out")
+        cleanupVirtualEnvHandler(venvHdl)
+        return None
+
+    output = venvHdl.testAppInVirtualEnv(cmdargs=['python', pyFile])
 
     cleanupVirtualEnvHandler(venvHdl)
-    return ret
+    return output
 
 
 class RabbitConnection(object):
@@ -67,15 +90,20 @@ class RabbitConnection(object):
         LOG.info('Registration successful')
 
     def OnDeployRequest(self, ch, method, props, body):
-#        deploySuccess = work(body)
-        LOG.info('Processing %s' % body)
-        deploySuccess = True
-        if deploySuccess:
+        gitURL = body
+        LOG.info('Processing deploy request for repo: %s' % gitURL)
+
+        output = work(gitURL)
+
+        # 'output' contains stdout in the case of successful execution,
+        # None otherwise.
+        if output != None:
             response = json.dumps({'status': True,
-             'message': '__placeholder'})
+             'message': output})
         else:
+            # Ignore output for error.
             response = json.dumps({'status': False,
-             'message': '__placeholder'})
+             'message': ''})
         ch.basic_publish(exchange='',
                          routing_key=props.reply_to,
                          properties=pika.BasicProperties(

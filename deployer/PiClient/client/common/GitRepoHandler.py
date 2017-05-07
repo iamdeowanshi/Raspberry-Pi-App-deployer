@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 TIMEOUT = 30
 
 # TODO: Dedupe with alarm handler in VirtualEnv
-def timeoutHandler(self, signum, frame):
+def timeoutHandler(signum, frame):
     raise RuntimeError("Error")
 
 def gitClone(cloneDir, gitURL):
