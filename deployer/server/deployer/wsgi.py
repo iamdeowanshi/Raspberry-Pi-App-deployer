@@ -29,10 +29,10 @@ app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
-@app.route('/v1/<pi_id>/status', methods=['GET'])
-def details(pi_id):
+@app.route('/v1/<pi_ip>/status', methods=['GET'])
+def details(pi_ip):
     rserver = get_rabbit_server()
-    result = rserver.get_status(pi_id)
+    result = rserver.get_status(pi_ip)
     if result is None:
         # PI not found, raise 404
         abort(404)
@@ -45,19 +45,30 @@ def pi_list():
     return json.dumps(rserver.list_connected())
 
 
-@app.route('/v1/<pi_id>/deploy', methods=['POST', 'PUT'])
-def deploy(pi_id):
+@app.route('/v1/<pi_ip>/deploy', methods=['POST', 'PUT'])
+def deploy(pi_ip):
     rserver = get_rabbit_server()
     try:
         data = request.data
         LOG.info('Data: %s', data)
         json_data = json.loads(data)
     except:
-        return "Invalid JSON object"
+        result = {"result": "error", "message": "Invalid JSON Object"}
+        return json.dumps(result)
     if json_data.get('git_url'):
-        return 'Accepted request to deploy %s on %s' % (json_data['git_url'], pi_id)
+        rserver.add_package_to_pi(pi_ip, json_data.get('git_url'))
+        result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_ip)}
+        return json.dumps(result)
     else:
-        return 'Invalid request: param git_url absent'
+        result = {"result": "error", "message": "Invalid request: git_url absent"}
+        return json.dumps(result)
+
+@app.route('/v1/webhookresponse', methods=['POST', 'PUT'])
+def webhookcall():
+    data = request.data
+    LOG.info('Data: %s', data)
+    result = {"result":"webhook call successful"}
+    return json.dumps(result)
 
 
 def app_factory(global_config, **local_conf):

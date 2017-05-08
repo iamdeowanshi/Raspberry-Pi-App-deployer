@@ -6,7 +6,7 @@ import logging
 import logging.handlers
 
 
-def _get_arg_parser():
+def parse_args():
     parser = argparse.ArgumentParser(description="CMPE 273 App Deployer Service")
     parser.add_argument('--config-file', dest='config_file', default='/etc/deployer/deployer.conf')
     parser.add_argument('--paste-ini', dest='paste_file', default='/etc/deployer/deployer-paste.ini')
@@ -27,7 +27,7 @@ def _configure_logging(conf):
 
 
 if __name__ == '__main__':
-    parser = _get_arg_parser()
+    parser = parse_args()
     conf = config.get_config(parser.config_file)
     _configure_logging(conf)
     start_app(conf)

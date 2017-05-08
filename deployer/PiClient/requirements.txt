@@ -1,0 +1,5 @@
+pbr==1.8.1
+pika
+virtualenv-api
+GitPython
+

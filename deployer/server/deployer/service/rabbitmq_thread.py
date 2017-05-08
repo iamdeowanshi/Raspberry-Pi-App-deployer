@@ -1,5 +1,7 @@
 from deployer.common import constants
 from uuid import uuid4
+from rabbitmq_client import RabbitRpcClient as rpc_client
+import json
 import logging
 import pika
 import threading
@@ -47,12 +49,10 @@ class RabbitMain(object):
 
     def create_queue(self, pi_ip):
         result = None
-        pi_id = str(uuid4())
         with self.cache_lock:
-            self.connected_pi[pi_id] = {
+            self.connected_pi[pi_ip] = {
                 'packages': [],
                 'ip': pi_ip,
-                'status': constants.STATUS_EMPTY
             }
         try:
             self.rabbit_channel.queue_declare(pi_ip)
@@ -68,26 +68,39 @@ class RabbitMain(object):
             result = self.connected_pi.keys()
         return result
 
-    def get_status(self, pi_id):
+    def get_status(self, pi_ip):
         with self.cache_lock:
-            if pi_id not in self.connected_pi:
+            if pi_ip not in self.connected_pi:
                 return None
-            pi_info = self.connected_pi[pi_id]
+            pi_info = self.connected_pi[pi_ip]
             return pi_info
 
-#    def add_package_to_pi(self, pi_ip, url):
-#        with self.cache_lock:
-#            if pi_ip not in self.connected_pi:
-#                return None
-#            pi_info = self.connected_pi[pi_ip]
-#            for package in pi_info['packages']:
-#                if package['url'] == url:
-#                    return constants.STATUS_INSTALLING
-#            pi_info['packages'].append({'url': url,
-#                                'operation': })
-#
-        
-    def register(self, ch, props, body):
+    def add_package_to_pi(self, pi_ip, url):
+        with self.cache_lock:
+            if pi_ip not in self.connected_pi:
+                return None
+            pi_info = self.connected_pi[pi_ip]
+            for package in pi_info['packages']:
+                if package['url'] == url:
+                    return constants.STATUS_DUPLICATE
+            self.connected_pi[pi_ip]['packages'].append(
+                    {'url': url,
+                     'status': constants.STATUS_INSTALLING})
+        def _make_request():
+            deployer_rpc = rpc_client(self.rabbit_conn, url, pi_ip)
+            response = deployer_rpc.call()
+            resp_obj = json.loads(response)
+            with self.cache_lock:
+                for pkg in self.connected_pi[pi_ip]['packages']:
+                    if pkg['url'] == url:
+                        if resp_obj['status']:
+                            pkg['status'] = constants.STATUS_APP_OK
+                        else:
+                            pkg['status'] = constants.STATUS_ERROR
+                        pkg['message'] = resp_obj['message']
+        threading.Thread(target=_make_request).start()
+
+    def register(self, ch, method, props, body):
         pi_ip = str(body)
         LOG.info('Raspberry Pi: %s connected', pi_ip)
         response = self.create_queue(pi_ip)

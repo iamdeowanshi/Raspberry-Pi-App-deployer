@@ -1,20 +1,5 @@
-window.ip_list = [];
-jQuery(document).ready(function () {
-    // jQuery.ajax({
-    //     type: "GET",
-    //     url: "http://104.196.235.71/deployer/v1/list",
-    //     dataType: "json",
-    //     success: function (data, textStatus, jqXHR) {
-    //         data.forEach(function (element) {
-    //             window.ip_list.push(element);
-    //         }, this);
-    //         console.log(data.length + textStatus);
-    //     }, //function(data, textStatus, jqXHR)
-    //     error: function (jqXhr, textStatus, errorThrown) {
-    //         console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
-    //     }
-    // });
-
+jQuery(document).ready(function() {
+	
     /*
         Fullscreen background
     */
@@ -29,6 +14,7 @@ jQuery(document).ready(function () {
 
     $('#login-form').submit(function (e) {
         e.preventDefault();
+		
         var git_repo = document.getElementById("login-form")[1].value;
         var ip = document.getElementById("login-form")[0].value;
         console.log(git_repo);
@@ -46,6 +32,7 @@ jQuery(document).ready(function () {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
             }
         });
+        
     });
 
     function myFunction() {
