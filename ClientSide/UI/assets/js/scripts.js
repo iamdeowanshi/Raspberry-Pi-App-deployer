@@ -72,5 +72,21 @@ jQuery(document).ready(function() {
         });
 
     });
+    
+    function getToken(code) {
+        jQuery.ajax({
+            type: "POST",
+            url: "https://github.com/login/oauth/access_token",
+            data: '{"code":'+ code + ',"client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}',
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                console.log(data);// this is access token
+            }, //function(data, textStatus, jqXHR)
+            error: function (jqXhr, textStatus, errorThrown) {
+                console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
+            }
+        });
+    }
 
 });
