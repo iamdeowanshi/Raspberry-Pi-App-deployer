@@ -40,6 +40,7 @@ img { max-width: 100%; }
 .btn-link-1 {
 	display: inline-block;
 	height: 50px;
+	width: 100%;
 	margin: 5px;
 	padding: 16px 20px 0 20px;
 	background: #de615e;
@@ -47,6 +48,7 @@ img { max-width: 100%; }
     font-weight: 300;
     line-height: 16px;
     color: #fff;
+	text-align: center;
     -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
 }
 .btn-link-1:hover, .btn-link-1:focus, .btn-link-1:active { outline: 0; opacity: 0.6; color: #fff; }
@@ -122,6 +124,14 @@ img { max-width: 100%; }
 	padding-top: 25px;
 }
 
+.form-top-left1 {
+	float: left;
+	width: 100%;
+	padding-top: 25px;}
+
+.form-top-left1 h3 { margin-top: 0; color: #fff; }
+.form-top-left1 p { opacity: 0.8; color: #fff; }
+
 .form-top-left h3 { margin-top: 0; color: #fff; }
 .form-top-left p { opacity: 0.8; color: #fff; }
 
@@ -168,6 +178,21 @@ img { max-width: 100%; }
 	margin-top: 25px;
 }
 
+#btn-refresh {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	
+}
+
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
 
 /***** Media queries *****/
 

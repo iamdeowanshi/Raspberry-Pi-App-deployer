@@ -13,17 +13,20 @@ jQuery(document).ready(function() {
     	$(this).removeClass('input-error');
     });*/
     
-    $('#login-form').submit(function(e) {
+     $('#login-form').submit(function(e) {
         e.preventDefault();
         var git_repo = document.getElementById("login-form")[1].value;
+        var  ip = document.getElementById("login-form")[0].value;
         console.log(git_repo);
         jQuery.ajax({
          type: "POST",
-         url: "http://104.196.235.71/deployer/v1/6e2edab7-69be-43d0-a304-e655a708b811/deploy",
-         data: "{ git_url: git_repo}",
+         url: "http://104.196.235.71/deployer/v1/" + ip + "/deploy",
+         data: '{ "git_url": "' + git_repo + '"}',
          dataType:"json",
+         contentType: "application/json",
          success: function(data, textStatus, jqXHR) {
-            console.log(data + textStatus);
+            console.log(data.message);
+            showOutput(data.message, textStatus);
          }, //function(data, textStatus, jqXHR)
          error: function(jqXhr, textStatus, errorThrown) {
          console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
@@ -31,7 +34,28 @@ jQuery(document).ready(function() {
         });
     });
 
+function myFunction() {
+    var  ip = document.getElementById("login-form")[0].value;
+    jQuery.ajax({
+        type: "GET",
+        url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            console.log(data + textStatus);
+            document.getElementById("demo").innerHTML = data.message;
+        }, //function(data, textStatus, jqXHR)
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
+        }
+    });
+}
 
+ function showOutput(message, status) {
+       var e = document.getElementById("output");
+       e.style.display = 'block';
+       document.getElementById("message").innerHTML = message;
+       document.getElementById("status").innerHTML = status;
+ }
 
 $(function () {
 
