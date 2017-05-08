@@ -55,7 +55,7 @@ jQuery(document).ready(function() {
         var e = document.getElementById("output");
         e.style.display = 'block';
         document.getElementById("message").innerHTML = message;
-        document.getElementById("status").innerHTML = status;
+        document.getElementById("status").innerHTML = "Status: " + status;
     }
 
     $(function () {

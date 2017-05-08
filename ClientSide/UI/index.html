@@ -31,7 +31,13 @@
 
 </head>
 
-<body>
+<body onload="myFunction()">
+
+    <script>
+        function myFunction() {
+            alert("Page is loaded");
+        }
+    </script>
 
     <!-- Top content -->
     <section id="form" class="top-content">
@@ -50,7 +56,10 @@
                                 <p>Enter details to connect and deploy:</p>
                             </div>
                             <div class="form-top-right">
-                                <i class="fa fa-cloud"></i>
+                                <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&scope=write:repo_hook">
+                                    <i class="fa fa-github">
+                                </i>
+                                </a>
                             </div>
                         </div>
                         <div class="form-bottom">
@@ -99,10 +108,8 @@
                                 <button type="submit" class="btn">Deploy!</button>
                             </form>
                             <div id="output" style="margin-top:20px; display:none;">
-                                <h3 style="color:white;"> Status: </h3>
+                                <h3 id="status"style="color:white;"> Status: </h3>
                                 <p id="message" style="color:white"> </p>
-                                <p id="status" style="color:white"> </p>
-
                                 <center><button class="btn" onclick="myFunction()">Refresh</button></center>
 
                                 <script>
@@ -115,7 +122,7 @@
                                             success: function (data, textStatus, jqXHR) {
                                                 console.log(data + textStatus);
                                                 document.getElementById("message").innerHTML = data.status;
-                                                document.getElementById("status").innerHTML = textStatus;
+                                                document.getElementById("status").innerHTML = "Status: " + textStatus;
                                             }, //function(data, textStatus, jqXHR)
                                             error: function (jqXhr, textStatus, errorThrown) {
                                                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
