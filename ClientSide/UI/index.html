@@ -29,6 +29,11 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
 
+    <!-- Javascript -->
+    <script src="assets/js/jquery-1.11.1.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.backstretch.min.js"></script>
+    <script src="assets/js/scripts.js"></script>
 </head>
 
 <body onload="myFunction()">
@@ -105,10 +110,10 @@
                                     <input type="text" name="form-password" placeholder="Enter repo Url" value="https://github.com/amitakamat/cmpe273" class="form-password form-control"
                                         id="form-password">
                                 </div>
-                                <button type="submit" class="btn">Deploy!</button>
+                                <button type="submit" class="btn" id="btn">Deploy!</button>
                             </form>
                             <div id="output" style="margin-top:20px; display:none;">
-                                <h3 id="status"style="color:white;"> Status: </h3>
+                                <h3 id="status" style="color:white;"> Status: </h3>
                                 <p id="message" style="color:white"> </p>
                                 <center><button class="btn" onclick="myFunction()">Refresh</button></center>
 
@@ -122,7 +127,8 @@
                                             success: function (data, textStatus, jqXHR) {
                                                 console.log(data + textStatus);
                                                 document.getElementById("message").innerHTML = data.status;
-                                                document.getElementById("status").innerHTML = "Status: " + textStatus;
+                                                document.getElementById("status").innerHTML = "Status: " +
+                                                    textStatus;
                                             }, //function(data, textStatus, jqXHR)
                                             error: function (jqXhr, textStatus, errorThrown) {
                                                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
@@ -135,18 +141,14 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
-
     </section>
+    <div style="padding:5px;" id="message">
+        <div class="alert alert-info " id="alert" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Info!</strong> You should
+            <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&scope=write:repo_hook" class="alert-link">Connect to Github</a>
+        </div>
+    </div>
 
-
-    <!-- Javascript -->
-    <script src="assets/js/jquery-1.11.1.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.backstretch.min.js"></script>
-    <script src="assets/js/scripts.js"></script>
 
     <!--[if lt IE 10]>
             <script src="assets/js/placeholder.js"></script>

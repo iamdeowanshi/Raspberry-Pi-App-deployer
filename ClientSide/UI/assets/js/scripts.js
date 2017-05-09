@@ -1,5 +1,5 @@
-jQuery(document).ready(function() {
-	
+jQuery(document).ready(function () {
+
     /*
         Fullscreen background
     */
@@ -11,10 +11,14 @@ jQuery(document).ready(function() {
     /*    $('.login-form input[type="text"], .login-form input[type="password"], .login-form textarea').on('focus', function() {
         	$(this).removeClass('input-error');
         });*/
-
     $('#login-form').submit(function (e) {
         e.preventDefault();
-		
+        if (checkToken()) {
+            console.log("hello");
+            alertModal();
+            return;
+        }
+
         var git_repo = document.getElementById("login-form")[1].value;
         var ip = document.getElementById("login-form")[0].value;
         console.log(git_repo);
@@ -32,7 +36,7 @@ jQuery(document).ready(function() {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
             }
         });
-        
+
     });
 
     function myFunction() {
@@ -50,6 +54,20 @@ jQuery(document).ready(function() {
             }
         });
     }
+
+    function checkToken() {
+        return true;
+    }
+
+    function alertModal() {
+        console.log("came");
+        $(document).ready(function () {
+            console.log("came");
+        jQuery('#message').html('<div class="alert alert-info show" id="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Info!</strong> You should <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&scope=write:repo_hook"class="alert-link">Connect to Github</a></div>');
+        });
+        //document.getElementById("#message").style.display = "block";
+    }
+
 
     function showOutput(message, status) {
         var e = document.getElementById("output");
@@ -72,16 +90,16 @@ jQuery(document).ready(function() {
         });
 
     });
-    
+
     function getToken(code) {
         jQuery.ajax({
             type: "POST",
             url: "https://github.com/login/oauth/access_token",
-            data: '{"code":'+ code + ',"client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}',
+            data: '{"code":' + code + ',"client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}',
             dataType: "json",
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
-                console.log(data);// this is access token
+                console.log(data); // this is access token
             }, //function(data, textStatus, jqXHR)
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
