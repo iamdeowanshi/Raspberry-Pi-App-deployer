@@ -5,9 +5,7 @@ from service.rabbitmq_thread import get_rabbit_server
 import json
 import logging
 import sys
-import getpass
 import requests
-import base64
 
 LOG = logging.getLogger(__name__)
 
@@ -89,6 +87,13 @@ def deploy(pi_ip):
     if type_data == "cli":
         read_hooks(repo_name, code_data)
         rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
+    if type_data == "web":
+        try:
+            token = get_Access_Token(code_data)
+            read_hooks(repo_name, token)
+            rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
+        except:
+            LOG.info('Failed to get access token.')
 
     rserver.add_package_to_pi(pi_ip, json_data.get('git_url'), False)
     result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_ip)}
@@ -140,6 +145,17 @@ def add_hook(repo_name, TOKEN):
     url = 'https://api.github.com/repos/' + 'iamdeowanshi' + '/' + repo_name + '/hooks'
     response_data = requests.post(url, JSON_DATA, headers = headers)
     LOG.info('Add webhook response : ' + str(response_data.content))
+
+def get_Access_Token(code):
+    '''Fetching access token from github'''
+    headers = {"Content-type" : "application/json"}
+    data = '{"code":"' + code + '","client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}'
+    url = 'https://github.com/login/oauth/access_token'
+    response_data = requests.post(url, data, headers=headers)
+    resp_array = str(response_data.content).split("=")
+    token = resp_array[1].split("&")[0]
+    LOG.info('Get access token response : ' + str(response_data.content))
+    return token
 
 def app_factory(global_config, **local_conf):
     return app
