@@ -4,9 +4,26 @@ from flask import request
 from service.rabbitmq_thread import get_rabbit_server
 import json
 import logging
+import sys
+import getpass
+import requests
+import base64
 
 LOG = logging.getLogger(__name__)
 
+JSON_DATA = """
+{
+  "name": "web",
+  "active": true,
+  "events": [
+    "push"
+  ],
+  "config": {
+    "url": "http://104.196.235.71/deployer/v1/webhookresponse",
+    "content_type": "json"
+  }
+}
+"""
 
 class ReverseProxied(object):
     def __init__(self, app):
@@ -55,14 +72,27 @@ def deploy(pi_ip):
     except:
         result = {"result": "error", "message": "Invalid JSON Object"}
         return json.dumps(result)
-    if json_data.get('git_url'):
-        rserver.add_package_to_pi(pi_ip, json_data.get('git_url'), False)
-        result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_ip)}
-        rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
-        return json.dumps(result)
-    else:
+    if not json_data.get('git_url'):
         result = {"result": "error", "message": "Invalid request: git_url absent"}
         return json.dumps(result)
+    if not json_data.get('code'):
+        result = {"result": "error", "message": "Invalid request: code absent"}
+        return json.dumps(result)
+    if not json_data.get('type'):
+        result = {"result": "error", "message": "Invalid request: type absent"}
+        return json.dumps(result)
+    repo_url = json_data.get('git_url')
+    repo_array = str(repo_url).split("/")
+    repo_name = repo_array[4]
+    code_data = json_data.get('code')
+    type_data = json_data.get('type')
+    if type_data == "cli":
+        read_hooks(repo_name, code_data)
+        rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
+
+    rserver.add_package_to_pi(pi_ip, json_data.get('git_url'), False)
+    result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_ip)}
+    return json.dumps(result)
 
 @app.route('/v1/webhookresponse', methods=['POST', 'PUT'])
 def webhookcall():
@@ -87,6 +117,29 @@ def webhookcall():
         result ={"result" : "Webhook call made. No repository details present."}
     return json.dumps(result)
 
+def read_hooks(repo_name, TOKEN):
+    '''checking for webhooks'''
+    hook_url = "http://104.196.235.71/deployer/v1/webhookresponse"
+    headers = {'Authorization' : 'Basic ' + TOKEN}
+    url = 'https://api.github.com/repos/' + 'iamdeowanshi' + '/' + repo_name + '/hooks'
+    response_data = requests.get(url, headers = headers)
+    resp = json.loads(response_data.content)
+    count = 0
+    for index in xrange(len(resp)):
+        if hook_url == resp[index]['config']['url']:
+            count += 1
+            LOG.info('Repository already has a server webhook. Using the existing webhook')
+            break
+    if count == 0:
+        LOG.info('Repository does not have server webhook. Adding webhook.')
+        add_hook(repo_name, TOKEN)
+
+def add_hook(repo_name, TOKEN):
+    ''' Add hook to github repo'''
+    headers = {'Authorization' : 'Basic ' + TOKEN}
+    url = 'https://api.github.com/repos/' + 'iamdeowanshi' + '/' + repo_name + '/hooks'
+    response_data = requests.post(url, JSON_DATA, headers = headers)
+    LOG.info('Add webhook response : ' + str(response_data.content))
 
 def app_factory(global_config, **local_conf):
     return app
