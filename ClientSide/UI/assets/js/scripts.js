@@ -1,5 +1,23 @@
+var accessToken = "";
 jQuery(document).ready(function () {
 
+    $(window).load(function () {
+        var code = getAccessCode();
+        if (code != "") {
+            getToken(code);
+        } else {
+            alertModal();
+        }
+    })
+
+    function getAccessCode() {
+        var field = 'code';
+        var url = window.location.href;
+        if (url.indexOf('?' + field + '=') != -1)
+            return url.split("code=")[1];
+        else
+            return "";
+    }
     /*
         Fullscreen background
     */
@@ -8,16 +26,27 @@ jQuery(document).ready(function () {
     /*
         Form validation
     */
-    /*    $('.login-form input[type="text"], .login-form input[type="password"], .login-form textarea').on('focus', function() {
-        	$(this).removeClass('input-error');
-        });*/
-    $('#login-form').submit(function (e) {
+    $('.login-form input[type="text"], .login-form input[type="password"], .login-form textarea').on('focus', function () {
+        $(this).removeClass('input-error');
+    });
+
+    $('#login-form').submit(function (e) {	
         e.preventDefault();
         if (checkToken()) {
-            console.log("hello");
             alertModal();
             return;
         }
+
+        $(this).find('input[type="text"], input[type="password"], textarea').each(function(){
+    		if( $(this).val() == "" ) {
+    			e.preventDefault();
+    			$(this).addClass('input-error');
+                return;
+    		}
+    		else {
+    			$(this).removeClass('input-error');
+    		}
+    	});
 
         var git_repo = document.getElementById("login-form")[1].value;
         var ip = document.getElementById("login-form")[0].value;
@@ -56,14 +85,13 @@ jQuery(document).ready(function () {
     }
 
     function checkToken() {
-        return true;
+        var code = getAccessCode();
+        return (code != "") ? false : true;
     }
 
     function alertModal() {
-        console.log("came");
         $(document).ready(function () {
-            console.log("came");
-        jQuery('#message').html('<div class="alert alert-info show" id="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Info!</strong> You should <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&scope=write:repo_hook"class="alert-link">Connect to Github</a></div>');
+            jQuery('#message').html('<div class="alert alert-warning show" id="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Info!</strong> You should <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&scope=write:repo_hook"class="alert-link">Connect through Github</a></div>');
         });
         //document.getElementById("#message").style.display = "block";
     }
@@ -72,7 +100,7 @@ jQuery(document).ready(function () {
     function showOutput(message, status) {
         var e = document.getElementById("output");
         e.style.display = 'block';
-        document.getElementById("message").innerHTML = message;
+        document.getElementById("result").innerHTML = message;
         document.getElementById("status").innerHTML = "Status: " + status;
     }
 
@@ -99,6 +127,7 @@ jQuery(document).ready(function () {
             dataType: "json",
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
+                accessToken = data;
                 console.log(data); // this is access token
             }, //function(data, textStatus, jqXHR)
             error: function (jqXhr, textStatus, errorThrown) {
