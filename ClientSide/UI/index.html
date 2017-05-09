@@ -61,7 +61,7 @@
                                 <p>Enter details to connect and deploy:</p>
                             </div>
                             <div class="form-top-right">
-                                <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&scope=write:repo_hook">
+                                <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&amp;scope=write:repo_hook">
                                     <i class="fa fa-github-square" aria-hidden="true">
                                 </i>
                                 </a>
@@ -72,7 +72,11 @@
                                 <div class="form-group">
                                     <label class="sr-only" for="form-username">Username</label>
                                     <input list="ipList" type="text" name="form-username" placeholder="Enter Client Ip" class="form-username form-control" id="form-username">
-                                    <datalist id="ipList"></datalist>
+                                    <datalist id="ipList">
+                                        <option value="10.4.99.200"></option>
+                                        <option value="10.4.99.198"></option>
+                                        <option value="10.4.99.199"></option>
+                                    </datalist>
 
                                     <script type="text/javascript">
                                         var list = [];
@@ -111,6 +115,49 @@
                                         id="form-password">
                                 </div>
                                 <button type="submit" class="btn" id="btn">Deploy!</button>
+                                <p class="message">Already Deployed? <a href="#">Check Status</a></p>
+
+                            </form>
+                            <form role="form" action="" method="post" class="login-form" id="login-form1" style="display:none">
+                                <div class="form-group">
+
+                                    <input list="ipList" type="text" name="form-username" placeholder="Enter Client Ip" class="form-username form-control" id="form-username">
+
+
+                                    <script type="text/javascript">
+                                        var list = [];
+                                        window.onload = function () {
+                                            jQuery.ajax({
+                                                type: "GET",
+                                                url: "http://104.196.235.71/deployer/v1/list",
+                                                dataType: "json",
+                                                success: function (data, textStatus, jqXHR) {
+                                                    data.forEach(function (element) {
+                                                        list.push(element);
+                                                    }, this);
+                                                    console.log(data.length + textStatus);
+                                                    addItems(list);
+                                                }, //function(data, textStatus, jqXHR)
+                                                error: function (jqXhr, textStatus, errorThrown) {
+                                                    console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
+                                                }
+                                            });
+                                        }
+
+                                        function addItems(list) {
+                                            console.log(list);
+                                            var options = '';
+                                            for (var i = 0; i < list.length; i++) {
+                                                options += '<option value="' + list[i] + '" />';
+                                                console.log(list[i]);
+                                            }
+                                            document.getElementById('ipList').innerHTML = options;
+                                        }
+                                    </script>
+                                </div>
+
+                                <button type="submit" class="btn" onclick= 'myfunction()'id="btn">Check Status!</button>
+                                <p class="message">Need to Deploy? <a href="#">Deploy</a></p>
                             </form>
                             <div id="output" style="margin-top:20px; display:none;">
                                 <h3 id="status" style="color:white;"> Status: </h3>
@@ -118,23 +165,27 @@
                                 <center><button class="btn" onclick="myFunction()">Refresh</button></center>
 
                                 <script>
-                                    function myFunction() {
-                                        var ip = document.getElementById("login-form")[0].value;
-                                        jQuery.ajax({
-                                            type: "GET",
-                                            url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
-                                            dataType: "json",
-                                            success: function (data, textStatus, jqXHR) {
-                                                console.log(data + textStatus);
-                                                document.getElementById("result").innerHTML = data.status;
-                                                document.getElementById("status").innerHTML = "Status: " +
-                                                    textStatus;
-                                            }, //function(data, textStatus, jqXHR)
-                                            error: function (jqXhr, textStatus, errorThrown) {
-                                                console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
-                                            }
-                                        });
-                                    }
+                                                                     function myFunction() {
+                                                                         var ip = document.getElementById("login-form1")[0].value;
+                                                                         jQuery.ajax({
+                                                                             type: "GET",
+                                                                             url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
+                                                                             dataType: "json",
+                                                                             success: function (data, textStatus, jqXHR) {
+                                                                                 console.log(data + textStatus);
+                                                                                 document.getElementById("result").innerHTML = data.status;
+                                                                                 document.getElementById("status").innerHTML = "Status: " +
+                                                                                     textStatus;
+                                                                             }, //function(data, textStatus, jqXHR)
+                                                                             error: function (jqXhr, textStatus, errorThrown) {
+                                                                                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
+                                                                             }
+                                                                         });
+                                                                     }
+                                                                     $('.message a').click(function () {
+                                                                         console.log("Inside this script");
+                                                                         $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+                                                                     });
                                 </script>
                             </div>
                         </div>
@@ -144,13 +195,17 @@
         </div>
     </section>
     <div style="padding:5px;" id="message">
-
+        <div class="alert alert-warning show" id="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>Info!</strong> You should <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&amp;scope=write:repo_hook"
+                class="alert-link">Connect through Github</a></div>
     </div>
 
     <!--[if lt IE 10]>
             <script src="assets/js/placeholder.js"></script>
         <![endif]-->
 
+
+
+    <div class="backstretch" style="left: 0px; top: 0px; overflow: hidden; margin: 0px; padding: 0px; height: 522px; width: 1903px; z-index: -999999; position: fixed;"><img src="assets/img/backgrounds/1.jpg" style="position: absolute; margin: 0px; padding: 0px; border: none; width: 1903px; height: 1070.44px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -274.219px;"></div>
 </body>
 
 </html>
