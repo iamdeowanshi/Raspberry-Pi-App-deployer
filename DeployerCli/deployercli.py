@@ -60,7 +60,26 @@ def getPiListHandler(args):
 
 
 def deployAppHandler(args):
-    pass
+    url = 'http://' + args.serverIp + '/deployer/v1/' + args.piIp + '/deploy'
+    data = { 'git_url' : args.gitURL }
+    response = requests.post(url, data=json.dumps(data))
+    response.encoding = 'ISO-8859-1'
+
+    try:
+        response = json.loads(response.content)
+        if response['result'] == 'success':
+            print 'Successfully submitted deploy request for repo: %s' % args.gitURL
+        else:
+            print 'Failed to submit deploy request for repo: %s' % args.gitURL
+            return FAILURE
+
+        # TODO: Poll for request completion
+
+        return SUCCESS
+
+    except Exception as e:
+        print 'Error processing JSON. %s' % e.message
+        return FAILURE
 
 
 handlers = {
@@ -93,7 +112,6 @@ def argEval(args):
 def getArgs():
     parser = argparse.ArgumentParser(description='Deployer CLI.')
 
-    # We always need Pi IP. No default.
     parser.add_argument('--pi-ip', dest='piIp',
                      help='Raspberry Pi IP address')
 
@@ -106,7 +124,6 @@ def getArgs():
                      help='flask server port number')
 
     parser.add_argument('--git-url', dest='gitURL',
-                     default='https://github.com/amitakamat/Sample-Python-App',
                      help='git URL of project to deploy')
 
     parser.add_argument('--cmd', dest='cmd',
