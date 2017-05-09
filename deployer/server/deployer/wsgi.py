@@ -53,11 +53,21 @@ def deploy(pi_id):
         LOG.info('Data: %s', data)
         json_data = json.loads(data)
     except:
-        return "Invalid JSON object"
+        result = {"result": "error", "message": "Invalid JSON Object"}
+        return json.dumps(result)
     if json_data.get('git_url'):
-        return 'Accepted request to deploy %s on %s' % (json_data['git_url'], pi_id)
+        result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_id)}
+        return json.dumps(result)
     else:
-        return 'Invalid request: param git_url absent'
+        result = {"result": "error", "message": "Invalid request: git_url absent"}
+        return json.dumps(result)
+
+@app.route('/v1/webhookresponse', methods=['POST', 'PUT'])
+def webhookcall():
+    data = request.data
+    LOG.info('Data: %s', data)
+    result = {"result":"webhook call successful"}
+    return json.dumps(result)
 
 
 def app_factory(global_config, **local_conf):
