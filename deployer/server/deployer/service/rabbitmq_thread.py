@@ -46,6 +46,8 @@ class RabbitMain(object):
                 "ip": "10.4.99.200"
             }
         }
+        self.url_to_pi_connection = {
+        }
 
     def create_queue(self, pi_ip):
         result = None
@@ -75,14 +77,15 @@ class RabbitMain(object):
             pi_info = self.connected_pi[pi_ip]
             return pi_info
 
-    def add_package_to_pi(self, pi_ip, url):
+    def add_package_to_pi(self, pi_ip, url, is_webhook_call):
         with self.cache_lock:
             if pi_ip not in self.connected_pi:
                 return None
             pi_info = self.connected_pi[pi_ip]
-            for package in pi_info['packages']:
-                if package['url'] == url:
-                    return constants.STATUS_DUPLICATE
+            if not is_webhook_call:
+                for package in pi_info['packages']:
+                    if package['url'] == url:
+                        return constants.STATUS_DUPLICATE
             self.connected_pi[pi_ip]['packages'].append(
                     {'url': url,
                      'status': constants.STATUS_INSTALLING})
@@ -99,6 +102,16 @@ class RabbitMain(object):
                             pkg['status'] = constants.STATUS_ERROR
                         pkg['message'] = resp_obj['message']
         threading.Thread(target=_make_request).start()
+
+    def add_pi_to_url(self, pi_ip, url):
+        with self.cache_lock:
+            if url not in self.url_to_pi_connection:
+                self.url_to_pi_connection[url] = []
+            self.url_to_pi_connection[url].append(pi_ip)
+
+    def get_ip_for_urls(self, url):
+        with self.cache_lock:
+            return self.url_to_pi_connection[url]
 
     def register(self, ch, method, props, body):
         pi_ip = str(body)
