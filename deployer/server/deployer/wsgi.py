@@ -56,8 +56,9 @@ def deploy(pi_ip):
         result = {"result": "error", "message": "Invalid JSON Object"}
         return json.dumps(result)
     if json_data.get('git_url'):
-        rserver.add_package_to_pi(pi_ip, json_data.get('git_url'))
+        rserver.add_package_to_pi(pi_ip, json_data.get('git_url'), False)
         result = {"result": "success", "message": "Accepted request to deploy %s on %s" % (json_data['git_url'], pi_ip)}
+        rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
         return json.dumps(result)
     else:
         result = {"result": "error", "message": "Invalid request: git_url absent"}
@@ -66,8 +67,24 @@ def deploy(pi_ip):
 @app.route('/v1/webhookresponse', methods=['POST', 'PUT'])
 def webhookcall():
     data = request.data
+    json_data = json.loads(data)
     LOG.info('Data: %s', data)
-    result = {"result":"webhook call successful"}
+    rserver = get_rabbit_server()
+    if json_data['repository']:
+        url = json_data['repository']['html_url']
+        LOG.info('URL: %s', url)
+        if url:
+            ip_list = rserver.get_ip_for_urls(url)
+            LOG.info(json.dumps(ip_list))
+            for ip in ip_list:
+                LOG.info('IP: %s', ip)
+                rserver.add_package_to_pi(ip, url, True)
+                LOG.info('Webhook Call for %s added for pi %s', url, ip)
+            result = {"result":"webhook call successful"}
+        else :
+            result = {"result" : "Webhook call made. No URL available."}
+    else :
+        result ={"result" : "Webhook call made. No repository details present."}
     return json.dumps(result)
 
 
