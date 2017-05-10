@@ -6,7 +6,7 @@
     <title>Rasberry Pie Deployer</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,100,300,500">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="assets/css/form-elements.css">
@@ -69,7 +69,7 @@
                                         window.onload = function () {
                                             jQuery.ajax({
                                                 type: "GET",
-                                                url: "http://104.196.235.71/deployer/v1/list",
+                                                url: "https://104.196.235.71/deployer/v1/list",
                                                 dataType: "json",
                                                 success: function (data, textStatus, jqXHR) {
                                                     data.forEach(function (element) {
@@ -114,7 +114,7 @@
                                         window.onload = function () {
                                             jQuery.ajax({
                                                 type: "GET",
-                                                url: "http://104.196.235.71/deployer/v1/list",
+                                                url: "https://104.196.235.71/deployer/v1/list",
                                                 dataType: "json",
                                                 success: function (data, textStatus, jqXHR) {
                                                     data.forEach(function (element) {
@@ -155,7 +155,7 @@
 										var ip = document.getElementById("login-form1")[0].value;
 										jQuery.ajax({
 											type: "GET",
-											url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
+											url: "https://104.196.235.71/deployer/v1/" + ip + "/status",
 											dataType: "json",
 										success: function (data, textStatus, jqXHR) {
 										console.log(data + textStatus);

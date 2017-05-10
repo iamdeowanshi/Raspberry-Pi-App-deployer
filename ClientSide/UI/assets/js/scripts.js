@@ -63,7 +63,7 @@ jQuery(document).ready(function () {
         console.log(git_repo);
         jQuery.ajax({
             type: "POST",
-            url: "http://104.196.235.71/deployer/v1/" + ip + "/deploy",
+            url: "https://104.196.235.71/deployer/v1/" + ip + "/deploy",
             data: '{ "git_url": "' + git_repo + '","code":"' + code + '","type": "web"}',
             dataType: "json",
             contentType: "application/json",
@@ -86,7 +86,7 @@ jQuery(document).ready(function () {
         var ip = document.getElementById("login-form1")[0].value;
         jQuery.ajax({
             type: "GET",
-            url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
+            url: "https://104.196.235.71/deployer/v1/" + ip + "/status",
             dataType: "json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data + textStatus);
