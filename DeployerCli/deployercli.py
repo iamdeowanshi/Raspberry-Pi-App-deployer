@@ -4,6 +4,7 @@ import sys
 import argparse
 import requests
 import json
+from gitAuthToken import getAuthToken
 
 SUCCESS = 0
 FAILURE = 1
@@ -47,6 +48,7 @@ def getPiListHandler(args):
     response.encoding = 'ISO-8859-1'
 
     try:
+        print response
         res = json.loads(response.content)
         print 'Registered Raspberry Pi(s) IP Addresses:'
         for pi in json.loads(response.content):
@@ -62,6 +64,11 @@ def getPiListHandler(args):
 def deployAppHandler(args):
     url = 'http://' + args.serverIp + '/deployer/v1/' + args.piIp + '/deploy'
     data = { 'git_url' : args.gitURL }
+
+    tok = getAuthToken()
+    data['code'] = str(tok)
+    data['type'] = 'cli'
+
     response = requests.post(url, data=json.dumps(data))
     response.encoding = 'ISO-8859-1'
 
@@ -74,7 +81,6 @@ def deployAppHandler(args):
             return FAILURE
 
         # TODO: Poll for request completion
-
         return SUCCESS
 
     except Exception as e:
@@ -131,8 +137,6 @@ def getArgs():
                      help='API action')
 
     args = parser.parse_args()
-
-    # dbgPrintAllArgs(args)
 
     # Does the requested command have the necessary parameters?
     if argEval(args) != True:
