@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -38,11 +35,6 @@
 
 <body onload="myFunction()">
 
-    <script>
-        function myFunction() {
-            alert("Page is loaded");
-        }
-    </script>
 
     <!-- Top content -->
     <section id="form" class="top-content">
@@ -105,8 +97,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="sr-only" for="form-password">Password</label>
-                                    <input type="text" name="form-password" placeholder="Enter repo Url" value="https://github.com/amitakamat/cmpe273" class="form-password form-control"
-                                        id="form-password">
+                                    <input type="text" name="form-password" placeholder="Enter repo Url" value="https://github.com/amitakamat/cmpe273" class="form-password form-control" id="form-password">
                                 </div>
                                 <button type="submit" class="btn" id="btn">Deploy!</button>
                                 <p class="message">Already Deployed? <a href="#">Check Status</a></p>
@@ -150,36 +141,35 @@
                                     </script>
                                 </div>
 
-                                <button type="submit" class="btn" onclick= 'myFunction()'id="btn">Check Status!</button>
+                                <button type="submit" class="btn"  id="btn">Check Status!</button>
                                 <p class="message">Need to Deploy? <a href="#">Deploy</a></p>
                             </form>
                             <div id="output" style="margin-top:20px; display:none;">
                                 <h3 id="status" style="color:white;"> Status: </h3>
                                 <p id="result" style="color:white"> </p>
-                                <center><button class="btn" onclick="myFunction()">Refresh</button></center>
+                                <center><button class="btn" onclick="myFunction1()">Refresh</button></center>
 
                                 <script>
-                                                                     function myFunction() {
-                                                                         var ip = document.getElementById("login-form1")[0].value;
-                                                                         jQuery.ajax({
-                                                                             type: "GET",
-                                                                             url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
-                                                                             dataType: "json",
-                                                                             success: function (data, textStatus, jqXHR) {
-                                                                                 console.log(data + textStatus);
-                                                                                 document.getElementById("result").innerHTML = data.status;
-                                                                                 document.getElementById("status").innerHTML = "Status: " +
-                                                                                     textStatus;
-                                                                             }, //function(data, textStatus, jqXHR)
-                                                                             error: function (jqXhr, textStatus, errorThrown) {
-                                                                                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
-                                                                             }
-                                                                         });
-                                                                     }
-                                                                     $('.message a').click(function () {
-                                                                         console.log("Inside this script");
-                                                                         $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
-                                                                     });
+                                    
+                                   function myFunction1() {
+										var ip = document.getElementById("login-form1")[0].value;
+										jQuery.ajax({
+											type: "GET",
+											url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
+											dataType: "json",
+										success: function (data, textStatus, jqXHR) {
+										console.log(data + textStatus);
+										$('#output').show();
+										document.getElementById("result").innerHTML = data.status;
+										document.getElementById("status").innerHTML = "Status: " +
+                                                    textStatus;
+										}, //function(data, textStatus, jqXHR)
+										error: function (jqXhr, textStatus, errorThrown) {
+							
+										console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
+									}
+									});
+									}
                                 </script>
                             </div>
                         </div>
@@ -188,10 +178,7 @@
             </div>
         </div>
     </section>
-    <div style="padding:5px;" id="message">
-        <div class="alert alert-warning show" id="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>Info!</strong> You should <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&amp;scope=write:repo_hook"
-                class="alert-link">Connect through Github</a></div>
-    </div>
+    <div style="padding:5px;" id="message"><div class="alert alert-warning show" id="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>Info!</strong> You should <a href="https://github.com/login/oauth/authorize?client_id=9ef838536d7516d3ab56&amp;scope=write:repo_hook" class="alert-link">Connect through Github</a></div></div>
 
     <!--[if lt IE 10]>
             <script src="assets/js/placeholder.js"></script>
@@ -200,6 +187,6 @@
 
 
     <div class="backstretch" style="left: 0px; top: 0px; overflow: hidden; margin: 0px; padding: 0px; height: 522px; width: 1903px; z-index: -999999; position: fixed;"><img src="assets/img/backgrounds/1.jpg" style="position: absolute; margin: 0px; padding: 0px; border: none; width: 1903px; height: 1070.44px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -274.219px;"></div>
-</body>
 
-</html>
+
+</body></html>
