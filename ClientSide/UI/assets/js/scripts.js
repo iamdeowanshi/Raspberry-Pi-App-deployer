@@ -1,5 +1,15 @@
 var code = "";
 jQuery(document).ready(function () {
+	
+	
+	 $('.message a').click(function () {
+                                        console.log("Inside this script");
+										$('#output').hide();
+                                        $('form').animate({
+                                            height: "toggle",
+                                            opacity: "toggle"
+                                        }, "slow");
+                                    });
 
     $(window).load(function () {
         var code = getAccessCode();
@@ -67,16 +77,23 @@ jQuery(document).ready(function () {
         });
 
     });
+	$('#login-form1').submit(function (e) {	
+        e.preventDefault();
+		myFunction1();
+	});
 
-    function myFunction() {
-        var ip = document.getElementById("login-form")[0].value;
+    function myFunction1() {
+        var ip = document.getElementById("login-form1")[0].value;
         jQuery.ajax({
             type: "GET",
             url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
             dataType: "json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data + textStatus);
-                document.getElementById("demo").innerHTML = data.message;
+				$('#output').show();
+                document.getElementById("result").innerHTML = data.status;
+                document.getElementById("status").innerHTML = "Status: " +
+                                                    textStatus;
             }, //function(data, textStatus, jqXHR)
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
