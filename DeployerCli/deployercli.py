@@ -19,8 +19,8 @@ def dbgPrintAllArgs(args):
 
 
 def getPiStatusHandler(args):
-    url = 'http://' + args.serverIp + '/deployer/v1/' + args.piIp + '/status'
-    response = requests.get(url)
+    url = 'https://' + args.serverIp + '/deployer/v1/' + args.piIp + '/status'
+    response = requests.get(url, verify=False)
     response.encoding = 'ISO-8859-1'
 
     if response.status_code == 404:
@@ -43,8 +43,8 @@ def getPiStatusHandler(args):
 
 
 def getPiListHandler(args):
-    url = 'http://' + args.serverIp + '/deployer/v1/list'
-    response = requests.get(url)
+    url = 'https://' + args.serverIp + '/deployer/v1/list'
+    response = requests.get(url, verify=False)
     response.encoding = 'ISO-8859-1'
 
     try:
@@ -62,14 +62,14 @@ def getPiListHandler(args):
 
 
 def deployAppHandler(args):
-    url = 'http://' + args.serverIp + '/deployer/v1/' + args.piIp + '/deploy'
+    url = 'https://' + args.serverIp + '/deployer/v1/' + args.piIp + '/deploy'
     data = { 'git_url' : args.gitURL }
 
     tok = getAuthToken()
     data['code'] = str(tok)
     data['type'] = 'cli'
 
-    response = requests.post(url, data=json.dumps(data))
+    response = requests.post(url, data=json.dumps(data), verify=False)
     response.encoding = 'ISO-8859-1'
 
     try:
