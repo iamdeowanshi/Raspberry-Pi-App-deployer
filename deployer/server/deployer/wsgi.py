@@ -91,7 +91,7 @@ def deploy(pi_ip):
     if type_data == "web":
         try:
             token = get_Access_Token(code_data)
-            read_hooks(repo_name, token)
+            read_hooks(user_name, repo_name, token)
             rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
         except:
             LOG.info('Failed to get access token.')
