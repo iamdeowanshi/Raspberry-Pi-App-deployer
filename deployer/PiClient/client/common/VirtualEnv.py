@@ -46,7 +46,7 @@ class VirtualEnvHandler(object):
                 # FIXME: This is a hack. We are passing package name as '-r'
                 # and reqFile as part of the options list. This will be expanded
                 # correctly though (for now).
-
+                LOG.info("Installing pip packages from requirements.txt")
                 self.venv.install('-r', options=[reqFile])
             else:
                 # Here, 'reqFile' is the package name
@@ -56,6 +56,7 @@ class VirtualEnvHandler(object):
             LOG.exception("Error installing package(s)")
             return False
 
+        LOG.info("Successfully installed pip packages")
         return True
 
     '''
@@ -74,6 +75,7 @@ class VirtualEnvHandler(object):
 
         try:
             # TODO: Private function. We may want to fork the project for stability.
+            LOG.info("Running python application from %s", self.venvDir)
             out = self.venv._execute(cmdargs)
 
         except RuntimeError as e:
@@ -85,6 +87,7 @@ class VirtualEnvHandler(object):
 
         # Disable the alarm
         signal.alarm(0)
+        LOG.info("Output from execution: %s", out)
         return out
 
 
