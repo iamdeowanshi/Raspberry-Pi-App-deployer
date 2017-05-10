@@ -1,20 +1,20 @@
 var code = "";
 jQuery(document).ready(function () {
-	
-	
-	 $('.message a').click(function () {
-                                        console.log("Inside this script");
-										$('#output').hide();
-                                        $('form').animate({
-                                            height: "toggle",
-                                            opacity: "toggle"
-                                        }, "slow");
-                                    });
+
+
+    $('.message a').click(function () {
+        console.log("Inside this script");
+        $('#output').hide();
+        $('form').animate({
+            height: "toggle",
+            opacity: "toggle"
+        }, "slow");
+    });
 
     $(window).load(function () {
         var code = getAccessCode();
         if (code != "") {
-            getToken(code);
+
         } else {
             alertModal();
         }
@@ -40,23 +40,22 @@ jQuery(document).ready(function () {
         $(this).removeClass('input-error');
     });
 
-    $('#login-form').submit(function (e) {	
+    $('#login-form').submit(function (e) {
         e.preventDefault();
         if (checkToken()) {
             alertModal();
             return;
         }
 
-        $(this).find('input[type="text"], input[type="password"], textarea').each(function(){
-    		if( $(this).val() == "" ) {
-    			e.preventDefault();
-    			$(this).addClass('input-error');
+        $(this).find('input[type="text"], input[type="password"], textarea').each(function () {
+            if ($(this).val() == "") {
+                e.preventDefault();
+                $(this).addClass('input-error');
                 return;
-    		}
-    		else {
-    			$(this).removeClass('input-error');
-    		}
-    	});
+            } else {
+                $(this).removeClass('input-error');
+            }
+        });
 
         var git_repo = document.getElementById("login-form")[1].value;
         var ip = document.getElementById("login-form")[0].value;
@@ -77,10 +76,10 @@ jQuery(document).ready(function () {
         });
 
     });
-	$('#login-form1').submit(function (e) {	
+    $('#login-form1').submit(function (e) {
         e.preventDefault();
-		myFunction1();
-	});
+        myFunction1();
+    });
 
     function myFunction1() {
         var ip = document.getElementById("login-form1")[0].value;
@@ -90,10 +89,16 @@ jQuery(document).ready(function () {
             dataType: "json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data + textStatus);
-				$('#output').show();
-                document.getElementById("result").innerHTML = data.status;
+                $('#output').show();
+                var message = "";
+                list = data.packages;
+                list.forEach(function (element) {
+                    message += "<b>Repo Url</b> :" + element.url +
+                        "--> <b>Status</b> : " + element.status + "<br>";
+                }, this);
+                document.getElementById("result").innerHTML = message;
                 document.getElementById("status").innerHTML = "Status: " +
-                                                    textStatus;
+                    textStatus;
             }, //function(data, textStatus, jqXHR)
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
@@ -112,7 +117,6 @@ jQuery(document).ready(function () {
         });
         //document.getElementById("#message").style.display = "block";
     }
-
 
     function showOutput(message, status) {
         var e = document.getElementById("output");
@@ -136,24 +140,24 @@ jQuery(document).ready(function () {
 
     });
 
-    function getToken(code) {
-        json_data = '{"code":"' + code + '","client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}';
-        console.log(json_data);
-        var xhr = jQuery.ajax({
-            type: "post",
-            url: "https://github.com/login/oauth/access_token",
-            data: json_data,
-            dataType: "json",
-            contentType: "application/json",
-            success: function (data, textStatus, jqXHR) {
-                accessToken = data;
-                console.log(data); // this is access token
-            }, //function(data, textStatus, jqXHR)
-            error: function (jqXhr, textStatus, errorThrown) {
-                console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
-            }
-        });
-        console.log(xhr);
-    }
+    // function getToken(code) {
+    //     json_data = '{"code":"' + code + '","client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}';
+    //     console.log(json_data);
+    //     var xhr = jQuery.ajax({
+    //         type: "post",
+    //         url: "https://github.com/login/oauth/access_token",
+    //         data: json_data,
+    //         dataType: "json",
+    //         contentType: "application/json",
+    //         success: function (data, textStatus, jqXHR) {
+    //             accessToken = data;
+    //             console.log(data); // this is access token
+    //         }, //function(data, textStatus, jqXHR)
+    //         error: function (jqXhr, textStatus, errorThrown) {
+    //             console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
+    //         }
+    //     });
+    //     console.log(xhr);
+    // }
 
 });

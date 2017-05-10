@@ -25,26 +25,7 @@ class RabbitMain(object):
         self.rabbit_channel.queue_declare(constants.MAIN_QUEUE)
         self.cache_lock = threading.Lock()
         self.main_thread = None
-        # Fake data for initial testing
-        # TODO(amitakamat): Remove this
         self.connected_pi = {
-            "10.4.99.199": {
-                "packages": [{
-                    "url" : "https://github.com/amitakamat/fake.git",
-                    "status": constants.STATUS_APP_OK}],
-                "ip": "10.4.99.199"
-            },
-            "10.4.99.198": {
-                "packages": [],
-                "ip": "10.4.99.198"
-            },
-            "10.4.99.200": {
-                "packages": [{"url": "https://github.com/amitakamat/fake.git",
-                              "status": constants.STATUS_APP_OK},
-                             {"url": "https://github.com/siddharth/fake.git",
-                              "status": constants.STATUS_INSTALLING}],
-                "ip": "10.4.99.200"
-            }
         }
         self.url_to_pi_connection = {
         }
