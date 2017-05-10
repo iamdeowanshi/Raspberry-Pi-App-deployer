@@ -81,11 +81,12 @@ def deploy(pi_ip):
         return json.dumps(result)
     repo_url = json_data.get('git_url')
     repo_array = str(repo_url).split("/")
+    user_name = repo_array[3]
     repo_name = repo_array[4]
     code_data = json_data.get('code')
     type_data = json_data.get('type')
     if type_data == "cli":
-        read_hooks(repo_name, code_data)
+        read_hooks(user_name,repo_name, code_data)
         rserver.add_pi_to_url(pi_ip, json_data.get('git_url'))
     if type_data == "web":
         try:
@@ -122,11 +123,11 @@ def webhookcall():
         result ={"result" : "Webhook call made. No repository details present."}
     return json.dumps(result)
 
-def read_hooks(repo_name, TOKEN):
+def read_hooks(user_name, repo_name, TOKEN):
     '''checking for webhooks'''
     hook_url = "http://104.196.235.71/deployer/v1/webhookresponse"
-    headers = {'Authorization' : 'Basic ' + TOKEN}
-    url = 'https://api.github.com/repos/' + 'iamdeowanshi' + '/' + repo_name + '/hooks'
+    headers = {'Authorization' : 'token ' + TOKEN}
+    url = 'https://api.github.com/repos/' + user_name + '/' + repo_name + '/hooks'
     response_data = requests.get(url, headers = headers)
     resp = json.loads(response_data.content)
     count = 0
