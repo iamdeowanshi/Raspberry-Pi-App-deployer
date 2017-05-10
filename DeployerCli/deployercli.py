@@ -33,7 +33,8 @@ def getPiStatusHandler(args):
         for package in res['packages']:
             print '    Package URL: %s' % package['url']
             print '    Package Status: %s' % package['status']
-            print '    Package Message: %s'% package['message']
+            if 'message' in package:
+                print '    Package Message: %s'% package['message']
 
         return SUCCESS
 
