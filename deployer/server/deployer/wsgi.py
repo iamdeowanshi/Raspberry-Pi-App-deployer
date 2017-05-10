@@ -17,7 +17,7 @@ JSON_DATA = """
     "push"
   ],
   "config": {
-    "url": "http://104.196.235.71/deployer/v1/webhookresponse",
+    "url": "http://104.196.235.71/webhook",
     "content_type": "json"
   }
 }
@@ -125,24 +125,27 @@ def webhookcall():
 
 def read_hooks(user_name, repo_name, TOKEN):
     '''checking for webhooks'''
-    hook_url = "http://104.196.235.71/deployer/v1/webhookresponse"
-    headers = {'Authorization' : 'token ' + TOKEN}
+    hook_url = "http://104.196.235.71/webhook"
+    headers = {'Authorization' : 'Basic ' + TOKEN}
     url = 'https://api.github.com/repos/' + user_name + '/' + repo_name + '/hooks'
     response_data = requests.get(url, headers = headers)
     resp = json.loads(response_data.content)
     count = 0
-    for index in xrange(len(resp)):
-        if hook_url == resp[index]['config']['url']:
-            count += 1
-            LOG.info('Repository already has a server webhook. Using the existing webhook')
-            break
+    try:
+        for index in xrange(len(resp)):
+            if hook_url == resp[index]['config']['url']:
+                count += 1
+                LOG.info('Repository already has a server webhook. Using the existing webhook')
+                break
+    except:
+        LOG.info('Response is not in required format')
     if count == 0:
         LOG.info('Repository does not have server webhook. Adding webhook.')
         add_hook(user_name,repo_name, TOKEN)
 
 def add_hook(user_name, repo_name, TOKEN):
     ''' Add hook to github repo'''
-    headers = {'Authorization' : 'token ' + TOKEN}
+    headers = {'Authorization' : 'Basic ' + TOKEN}
     url = 'https://api.github.com/repos/' + user_name + '/' + repo_name + '/hooks'
     response_data = requests.post(url, JSON_DATA, headers = headers)
     LOG.info('Add webhook response : ' + str(response_data.content))
