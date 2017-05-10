@@ -66,6 +66,7 @@
                                 <div class="form-group">
                                     <label class="sr-only" for="form-username">Username</label>
                                     <input list="ipList" type="text" name="form-username" placeholder="Enter Client Ip" class="form-username form-control" id="form-username">
+                                    <datalist id="ipList"></datalist>
                                     <script type="text/javascript">
                                         var list = [];
                                         window.onload = function () {
@@ -110,8 +111,7 @@
                                 <div class="form-group">
 
                                     <input list="ipList" type="text" name="form-username" placeholder="Enter Client Ip" class="form-username form-control" id="form-username">
-
-
+                                    <datalist id="ipList"></datalist>
                                     <script type="text/javascript">
                                         var list = [];
                                         window.onload = function () {
@@ -154,7 +154,7 @@
 
                                 <script>
                                     function myFunction1() {
-                                        var ip = document.getElementById("login-form1")[0].value;
+                                        var ip = document.getElementById("login-form")[0].value;
                                         jQuery.ajax({
                                             type: "GET",
                                             url: "https://104.196.235.71/deployer/v1/" + ip + "/status",
@@ -162,7 +162,13 @@
                                             success: function (data, textStatus, jqXHR) {
                                                 console.log(data + textStatus);
                                                 $('#output').show();
-                                                document.getElementById("result").innerHTML = data.status;
+                                                list = data.packages;
+                                                var message = "";
+                                                list.forEach(function (element) {
+                                                    message += "<b>Repo Url</b> :" + element.url +
+                                                        "--> <b>Status</b> : " + element.status + "<br>";
+                                                }, this);
+                                                document.getElementById("result").innerHTML = message;
                                                 document.getElementById("status").innerHTML = "Status: " +
                                                     textStatus;
                                             }, //function(data, textStatus, jqXHR)
