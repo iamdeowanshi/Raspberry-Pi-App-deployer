@@ -91,6 +91,7 @@ jQuery(document).ready(function () {
                 console.log(data + textStatus);
                 $('#output').show();
                 var message = "";
+                list = data.packages;
                 list.forEach(function (element) {
                     message += "<b>Repo Url</b> :" + element.url +
                         "--> <b>Status</b> : " + element.status + "<br>";
