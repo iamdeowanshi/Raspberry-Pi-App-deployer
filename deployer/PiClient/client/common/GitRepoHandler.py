@@ -6,7 +6,6 @@ LOG = logging.getLogger(__name__)
 
 TIMEOUT = 30
 
-# TODO: Dedupe with alarm handler in VirtualEnv
 def timeoutHandler(signum, frame):
     raise RuntimeError("Error")
 
@@ -14,7 +13,7 @@ def gitClone(cloneDir, gitURL):
     ret = False
 
     # If clone doesn't complete in TIMEOUT seconds, raise alarm.
-    # TODO: This is in place to handle non-public/invalid github URLs, since
+    # This is in place to handle non-public/invalid github URLs, since
     # trying to clone those asks for user authentication. Use timeouts for
     # now to identify this condition.
 

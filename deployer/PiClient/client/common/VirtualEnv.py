@@ -43,9 +43,6 @@ class VirtualEnvHandler(object):
     def installReqsInVirtualEnv(self, reqFile):
         try:
             if os.path.exists(reqFile):
-                # FIXME: This is a hack. We are passing package name as '-r'
-                # and reqFile as part of the options list. This will be expanded
-                # correctly though (for now).
                 LOG.info("Installing pip packages from requirements.txt")
                 self.venv.install('-r', options=[reqFile])
             else:
@@ -74,7 +71,7 @@ class VirtualEnvHandler(object):
         signal.alarm(TIMEOUT)
 
         try:
-            # TODO: Private function. We may want to fork the project for stability.
+            # Private function. We may want to fork the project for stability.
             LOG.info("Running python application from %s", self.venvDir)
             out = self.venv._execute(cmdargs)
 
