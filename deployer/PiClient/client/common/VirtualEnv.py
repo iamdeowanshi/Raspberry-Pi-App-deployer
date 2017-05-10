@@ -9,7 +9,7 @@ from virtualenvapi.manage import VirtualEnvironment
 LOG = logging.getLogger(__name__)
 
 
-TIMEOUT = 10
+TIMEOUT = 30
 
 class VirtualEnvHandler(object):
     def __init__(self):
