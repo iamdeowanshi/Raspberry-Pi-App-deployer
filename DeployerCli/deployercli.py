@@ -19,7 +19,7 @@ def dbgPrintAllArgs(args):
 
 
 def getPiStatusHandler(args):
-    url = 'https://' + args.serverIp + '/deployer/v1/' + args.piIp + '/status'
+    url = 'https://' + args.serverIp + ':' + args.serverPort + '/deployer/v1/' + args.piIp + '/status'
     response = requests.get(url, verify=False)
     response.encoding = 'ISO-8859-1'
 
@@ -43,12 +43,11 @@ def getPiStatusHandler(args):
 
 
 def getPiListHandler(args):
-    url = 'https://' + args.serverIp + '/deployer/v1/list'
+    url = 'https://' + args.serverIp + ':' + args.serverPort + '/deployer/v1/list'
     response = requests.get(url, verify=False)
     response.encoding = 'ISO-8859-1'
 
     try:
-        print response
         res = json.loads(response.content)
         print 'Registered Raspberry Pi(s) IP Addresses:'
         for pi in json.loads(response.content):
@@ -62,25 +61,27 @@ def getPiListHandler(args):
 
 
 def deployAppHandler(args):
-    url = 'https://' + args.serverIp + '/deployer/v1/' + args.piIp + '/deploy'
-    data = { 'git_url' : args.gitURL }
+    url = 'https://' + args.serverIp +  ':' + args.serverPort +  '/deployer/v1/' + args.piIp + '/deploy'
 
     tok = getAuthToken()
-    data['code'] = str(tok)
-    data['type'] = 'cli'
+
+    data = {  'git_url' : args.gitURL,
+              'type'    : 'cli',
+              'code'    : tok
+           }
 
     response = requests.post(url, data=json.dumps(data), verify=False)
     response.encoding = 'ISO-8859-1'
 
     try:
         response = json.loads(response.content)
+
         if response['result'] == 'success':
             print 'Successfully submitted deploy request for repo: %s' % args.gitURL
         else:
             print 'Failed to submit deploy request for repo: %s' % args.gitURL
             return FAILURE
 
-        # TODO: Poll for request completion
         return SUCCESS
 
     except Exception as e:
@@ -126,7 +127,7 @@ def getArgs():
                      help='flask server IP address')
 
     parser.add_argument('--server-port', dest='serverPort',
-                     default='3000',
+                     default='443',
                      help='flask server port number')
 
     parser.add_argument('--git-url', dest='gitURL',
@@ -147,8 +148,11 @@ def getArgs():
 
 
 if __name__ =='__main__':
+    # Disable certificate warnings
+    requests.packages.urllib3.disable_warnings()
+
     args = getArgs()
     if args == None:
         sys.exit(FAILURE)
-        
+
     sys.exit(action(args))
