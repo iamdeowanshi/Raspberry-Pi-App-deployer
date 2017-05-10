@@ -51,6 +51,13 @@ def add_hook():
     response_data = requests.post(url, JSON_DATA, headers=headers)
     print response_data.content
 
+def get_Access_Token(code):
+    '''Fetching access token from github'''
+    headers = {"Content-type" : "application/json"}
+    data = '{"code":"' + code + '","client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}'
+    url = 'https://github.com/login/oauth/access_token'
+    response_data = requests.post(url, data, headers=headers)
+    print response_data.content
 
 if __name__ == "__main__":
     # USERNAME = raw_input("Github Username:")

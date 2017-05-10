@@ -1,5 +1,15 @@
-var accessToken = "";
+var code = "";
 jQuery(document).ready(function () {
+	
+	
+	 $('.message a').click(function () {
+                                        console.log("Inside this script");
+										$('#output').hide();
+                                        $('form').animate({
+                                            height: "toggle",
+                                            opacity: "toggle"
+                                        }, "slow");
+                                    });
 
     $(window).load(function () {
         var code = getAccessCode();
@@ -54,7 +64,7 @@ jQuery(document).ready(function () {
         jQuery.ajax({
             type: "POST",
             url: "http://104.196.235.71/deployer/v1/" + ip + "/deploy",
-            data: '{ "git_url": "' + git_repo + '"}',
+            data: '{ "git_url": "' + git_repo + '","code":"' + code + '","type": "web"}',
             dataType: "json",
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
@@ -67,16 +77,23 @@ jQuery(document).ready(function () {
         });
 
     });
+	$('#login-form1').submit(function (e) {	
+        e.preventDefault();
+		myFunction1();
+	});
 
-    function myFunction() {
-        var ip = document.getElementById("login-form")[0].value;
+    function myFunction1() {
+        var ip = document.getElementById("login-form1")[0].value;
         jQuery.ajax({
             type: "GET",
             url: "http://104.196.235.71/deployer/v1/" + ip + "/status",
             dataType: "json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data + textStatus);
-                document.getElementById("demo").innerHTML = data.message;
+				$('#output').show();
+                document.getElementById("result").innerHTML = data.status;
+                document.getElementById("status").innerHTML = "Status: " +
+                                                    textStatus;
             }, //function(data, textStatus, jqXHR)
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
@@ -85,7 +102,7 @@ jQuery(document).ready(function () {
     }
 
     function checkToken() {
-        var code = getAccessCode();
+        code = getAccessCode();
         return (code != "") ? false : true;
     }
 
@@ -120,10 +137,12 @@ jQuery(document).ready(function () {
     });
 
     function getToken(code) {
-        jQuery.ajax({
-            type: "POST",
+        json_data = '{"code":"' + code + '","client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}';
+        console.log(json_data);
+        var xhr = jQuery.ajax({
+            type: "post",
             url: "https://github.com/login/oauth/access_token",
-            data: '{"code":' + code + ',"client_id": "9ef838536d7516d3ab56","client_secret":"a6db61f6620ac50e96dd93193c02e753fb91d1ea"}',
+            data: json_data,
             dataType: "json",
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
@@ -134,6 +153,7 @@ jQuery(document).ready(function () {
                 console.log(errorThrown); //function(jqXHR, textStatus, errorThrown)
             }
         });
+        console.log(xhr);
     }
 
 });
