@@ -117,7 +117,6 @@ jQuery(document).ready(function () {
         //document.getElementById("#message").style.display = "block";
     }
 
-
     function showOutput(message, status) {
         var e = document.getElementById("output");
         e.style.display = 'block';
