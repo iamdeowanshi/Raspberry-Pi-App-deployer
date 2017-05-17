@@ -1,12 +1,10 @@
 # CMPE-273-Raspberry-Pi-App-deployer
-group project CMPE-273
-
-Instructions:
-1. Run both client and server on LOCAL first.
-2. Implement your tasks and test on local first and then run on cloud server as we have only one server configured.
-3. If you want to try configuring your own server, please sign up on GCE - You get $300 credit for 12 months.
 
 Requirements :
-Please run "pip install backports.tempfile" command before running the latest changes.
+Please run "pip install backports.tempfile" command before running the client code on Pi.
 
-Please DISCUSS if you face any problems while working on cloud server.
+App link:  https://104.196.235.71/
+To see list of Pi's connected double click client IP filed in UI.
+To find your public repositories click "Find"
+
+[![Homepage.png](https://s14.postimg.org/jxms8d49t/Homepage.png)](https://postimg.org/image/kn5kkq4t9/)
