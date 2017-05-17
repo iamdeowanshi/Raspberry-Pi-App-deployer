@@ -18,6 +18,10 @@ To find your public repositories click "Find"
 
 [![Homepage.png](https://s14.postimg.org/jxms8d49t/Homepage.png)](https://postimg.org/image/kn5kkq4t9/)
 
+You need to authorize your app on github before you deploy.
+
+[![authorize app.png](https://s30.postimg.org/64zlh15v5/authorize_app.png)](https://postimg.org/image/vb0jnv759/)
+
 Sending deploy request for the first time creates a webhook on the repository, installs packages under requirements.txt and runs the app.
 Whenever commits are made to the repository, webhooks get triggered, and the packages get installed again and the app is run again.
 
