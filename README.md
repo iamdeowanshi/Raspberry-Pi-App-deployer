@@ -26,3 +26,10 @@ Sending deploy request for the first time creates a webhook on the repository, i
 Whenever commits are made to the repository, webhooks get triggered, and the packages get installed again and the app is run again.
 
 [![webhook.png](https://s16.postimg.org/w2gnlyz9x/webhook.png)](https://postimg.org/image/x4qu4ii35/)
+
+You can see the request added to the queue on RabbitMQ dashboard when we send request.  
+You can also check the status of the request by Client IP by clicking check status or by just refreshing after deploy request.
+
+[![Screenshot (211).png](https://s27.postimg.org/n6voxta77/Screenshot_211.png)](https://postimg.org/image/7ledduy8v/)
+
+[![Screenshot (209).png](https://s21.postimg.org/y3bin22dj/Screenshot_209.png)](https://postimg.org/image/50x8k8g3n/)
