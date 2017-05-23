@@ -1,4 +1,6 @@
-# CMPE-273-Raspberry-Pi-App-deployer
+SAAS based Raspberry Pi App deployer
+
+We can provide this product as a service to customers who just need to register their Raspberry Pi clients from any location (different networks - private/public). After registration they can send deploy requests through our app link and check status for the deployment. We can upgrade the server with regular updated code as the customers will not have any control over the servers.
 
 Requirements :
 Please run "pip install backports.tempfile" command before running the client code on Pi.
